@@ -1,0 +1,26 @@
+function bundle chow_dummy_func (const series Y, 
+                                 const list xvars, 
+                                 const string break_date,
+                                 const bool auxregprint[0])
+    bundle dummy_chow 
+    genr time 
+    list dummy_test = dummify(time)
+    loop for (t=($tmax - $nobs +2); t<obsnum(break_date); t++) -q
+        dummy_test -= Dtime_$t
+    endloop
+    if auxregprint
+        ols Y xvars dummy_test 
+    else
+        ols Y xvars dummy_test -q
+    endif
+    matrix dummy_chow.auxreg = $coeff ~ $coeff ./ $stderr ~ pvalue(t,$df,abs($coeff ./ $stderr))
+    scalar dummy_chow.rsq_aux = $rsq
+    omit dummy_test  --silent
+    scalar dummy_chow.F = $test
+    matrix dummy_chow.df = {nelem(dummy_test), $df-nelem(dummy_test)}
+    scalar dummy_chow.pval = $pvalue
+    printf "Chow Test (dummy version) break at observation %s\n\
+      \t F(%g,%g) = %.6g\n\
+      \t P-value = %.6g\n\n", break_date, dummy_chow.df[,1], dummy_chow.df[,2], dummy_chow.F, dummy_chow.pval
+    return dummy_chow
+end function

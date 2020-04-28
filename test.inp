@@ -1,0 +1,22 @@
+clear
+set verbose off
+open "Taylor.xlsx" --quiet 
+setobs 12 1960:01 --time-series
+/* select the variables that you want to insert 
+in your regression (include const) and put into 
+a list, a time series dataset must be in place 
+*/
+list xvars = const INFL PROD
+series y = INTRATE # for semplicity
+break_date = 1980:01
+
+## use my function to perform Chow test with matrix algebra
+include chow_dummy_matrix.inp
+chow_dummy_matrix(y,xvars,break_date)
+
+## another way 
+printf "\n--------------------------------------------------------\
+\nAlternative way using some pre-built gretl functions\n\
+  -------------------------------------------------------\n\n"
+include chow_dummy_func.inp
+chow_dummy_func(y,xvars,break_date)

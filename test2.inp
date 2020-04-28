@@ -1,0 +1,29 @@
+clear 
+set verbose off 
+# set messages off 
+include chow_dummy_func.inp
+include chow_dummy_matrix.inp
+
+open fedstl.bin --quiet 
+data cpiaucsl
+data unrate
+data indpro
+#open test.gdt
+smpl 1960:01
+
+series infl = ldiff(cpiaucsl)
+series ldip = ldiff(indpro)
+series u = log(unrate)
+
+list X = const u(0 to -5) ldip(0 to -5) 
+break_date = 2008:09
+
+## use my function to perform Chow dummy test with matrix algebra
+chow_dummy_matrix(infl,X,break_date)
+
+## another function  
+printf "\n--------------------------------------------------------\
+\nAlternative way using some pre-built gretl functions\n\
+-------------------------------------------------------\n\n"
+chow_dummy_func(infl,X,break_date)
+

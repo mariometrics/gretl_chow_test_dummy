@@ -1,0 +1,41 @@
+function bundle chow_dummy_matrix (const series Y, 
+                                   const list xvars, 
+                                   const string break_date,
+                                   const bool auxregprint[0])
+    bundle dummy_chow 
+    matrix y = {Y}
+    matrix X = {xvars}
+    matrix len = zeros(nelem(xvars),1)
+    loop i=1..nelem(xvars) -q
+        len[i,] = nobs(xvars[i])
+    endloop
+    scalar idx_row = $nobs - min(len) + 1
+    scalar idx_col = obsnum(break_date) - ($tmax - $nobs)
+    matrix dummy = I($nobs)
+    matrix dummy = dummy[idx_row:,idx_col:]
+    matrix y = y[idx_row:,]
+    matrix X_test = X ~ dummy 
+    matrix beta_u = inv(X_test'X_test)*X_test'y
+    matrix e_u = y - X_test*beta_u
+    scalar SSR_u = e_u'e_u
+    matrix beta_r = inv(X'X)*X'y
+    matrix e_r = y - X*beta_r 
+    scalar SSR_r = e_r'e_r
+    matrix var_beta_u = (SSR_u/(rows(X_test)-cols(X_test)))*inv(X_test'X_test)   
+    matrix df = {cols(dummy),(rows(X_test) - cols(X_test))}
+    scalar dummy_chow.F = ((SSR_r - SSR_u)/df[,1])/(SSR_u/df[,2])
+    matrix dummy_chow.df = df 
+    scalar dummy_chow.pval = pvalue(F,df[,1],df[,2],dummy_chow.F)
+    matrix dummy_chow.auxreg = beta_u ~ beta_u ./ sqrt(var_beta_u[diag]) ~ pvalue(t,df[,2],beta_u ./ sqrt(var_beta_u[diag]))
+    scalar dummy_chow.rsq_aux = 1 - (SSR_u/y'y)
+    if auxregprint 
+        printf "Chow test (dummy version) auxiliary regression\
+          \n     coeffs    ttest    p-value\
+          \n%10.3f",dummy_chow.auxreg 
+        printf "R^2 auxiliary regression: %.4g\n", dummy_chow.rsq_aux
+    endif
+    printf "Chow Test (dummy version) break at observation %s\n\
+      \t F(%g,%g) = %.6g\n\
+      \t P-value = %.6g\n\n", break_date, df[,1], df[,2], dummy_chow.F, dummy_chow.pval
+    return dummy_chow
+end function
