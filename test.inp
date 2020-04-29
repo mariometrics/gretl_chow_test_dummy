@@ -12,11 +12,11 @@ break_date = 1980:01
 
 ## use my function to perform Chow test with matrix algebra
 include chow_dummy_matrix.inp
-chow_dummy_matrix(y,xvars,break_date)
+chow_dummy_matrix(y,xvars,break_date,1)
 
 ## another way 
 printf "\n--------------------------------------------------------\
 \nAlternative way using some pre-built gretl functions\n\
   -------------------------------------------------------\n\n"
 include chow_dummy_func.inp
-chow_dummy_func(y,xvars,break_date)
+chow_dummy_func(y,xvars,break_date,1)

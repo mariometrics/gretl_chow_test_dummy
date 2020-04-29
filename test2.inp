@@ -3,8 +3,15 @@ set verbose off
 # set messages off 
 include chow_dummy_func.inp
 include chow_dummy_matrix.inp
+latest_data = 0 # 1 to keep latest available data
+if latest_data
+    string w = "--www"
+else 
+    string w = ""
+endif
 
-open fedstl.bin --quiet 
+# load some series 
+open fedstl.bin @w --quiet 
 data cpiaucsl
 data unrate
 data indpro
@@ -15,10 +22,14 @@ series infl = ldiff(cpiaucsl)
 series ldip = ldiff(indpro)
 series u = log(unrate)
 
+# specify regressor
 list X = const u(0 to -5) ldip(0 to -5) 
-break_date = 2008:09
+break_date = 2019:10 # COVID19 outspread in China 
 
 ## use my function to perform Chow dummy test with matrix algebra
+printf "\n-----------------------------------------------------------------------\
+\nPerform the so-called dummy Chow's test using matrix algebra (training)\n\
+----------------------------------------------------------------------\n\n"
 chow_dummy_matrix(infl,X,break_date)
 
 ## another function  
