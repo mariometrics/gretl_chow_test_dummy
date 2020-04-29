@@ -13,7 +13,7 @@ function bundle chow_dummy_func (const series Y "Dependent Variable",
     else
         ols Y xvars dummy_test -q
     endif
-    matrix dummy_chow.auxreg = $coeff ~ $coeff ./ $stderr ~ pvalue(t,$df,abs($coeff ./ $stderr))
+    matrix dummy_chow.auxreg = $coeff ~ $coeff ./ $stderr ~ (pvalue(t,$df,abs($coeff ./ $stderr)))*2
     scalar dummy_chow.rsq_aux = $rsq
     omit dummy_test  --silent
     scalar dummy_chow.F = $test

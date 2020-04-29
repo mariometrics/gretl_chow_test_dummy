@@ -30,11 +30,10 @@ break_date = 2019:10 # COVID19 outspread in China
 printf "\n-----------------------------------------------------------------------\
 \nPerform the so-called dummy Chow's test using matrix algebra (training)\n\
 ----------------------------------------------------------------------\n\n"
-chow_dummy_matrix(infl,X,break_date)
+dummy_chow = chow_dummy_matrix(infl,X,break_date,1)
 
 ## another function  
 printf "\n--------------------------------------------------------\
 \nAlternative way using some pre-built gretl functions\n\
 -------------------------------------------------------\n\n"
 chow_dummy_func(infl,X,break_date)
-

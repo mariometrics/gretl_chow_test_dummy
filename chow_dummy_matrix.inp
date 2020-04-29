@@ -26,12 +26,13 @@ function bundle chow_dummy_matrix (const series Y "Dependent Variable",
     scalar dummy_chow.F = ((SSR_r - SSR_u)/df[,1])/(SSR_u/df[,2])
     matrix dummy_chow.df = df 
     scalar dummy_chow.pval = pvalue(F,df[,1],df[,2],dummy_chow.F)
-    matrix dummy_chow.auxreg = beta_u ~ beta_u ./ sqrt(var_beta_u[diag]) ~ pvalue(t,df[,2],abs(beta_u ./ sqrt(var_beta_u[diag])))
+    matrix dummy_chow.auxreg = beta_u ~ beta_u ./ sqrt(var_beta_u[diag]) ~ (pvalue(t,df[,2],abs(beta_u ./ sqrt(var_beta_u[diag]))))*2
     scalar dummy_chow.rsq_aux = 1 - (SSR_u/(y - mean(y))'(y - mean(y)))
+    rnameset(dummy_chow.auxreg, varnames(xvars))
     if auxregprint 
         printf "Chow test (dummy version) auxiliary regression\
           \n     coeffs    ttest    p-value\
-          \n%10.3f",dummy_chow.auxreg 
+          \n%10.4f",dummy_chow.auxreg 
         printf "R^2 auxiliary regression: %.4g\n", dummy_chow.rsq_aux
     endif
     printf "Chow Test (dummy version) break at observation %s\nH0: No structural break\n\
